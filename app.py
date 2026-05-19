@@ -53,7 +53,15 @@ API_KEY_FILE = Path(__file__).parent / "data" / "api_key.json"
 
 
 def _load_api_key() -> str:
-    """从文件加载已保存的 API Key"""
+    """加载 API Key（优先 Streamlit Secrets，其次本地文件）"""
+    # 优先从 Streamlit Secrets 读取（云端部署）
+    try:
+        secret_key = st.secrets.get("ANTHROPIC_API_KEY", "")
+        if secret_key:
+            return secret_key
+    except Exception:
+        pass
+    # 回退到本地文件（本地开发）
     if API_KEY_FILE.exists():
         try:
             with open(API_KEY_FILE, "r", encoding="utf-8") as f:
