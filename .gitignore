@@ -1,0 +1,33 @@
+# Sensitive data (API keys, passwords)
+data/api_key.json
+data/admin_password.json
+
+# Uploaded files (runtime)
+uploads/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Local config / log files
+watchdog.log
+watchdog.sh
+启动应用.bat
+重启服务.bat
+index.html
+standalone.html
+lt_output.txt
+公网链接.txt
+作品说明表.txt
+操作说明手册.txt
+
+# OS
+.DS_Store
+Thumbs.db
