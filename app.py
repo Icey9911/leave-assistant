@@ -364,6 +364,52 @@ with st.sidebar:
             st.rerun()
 
 
+# ==================== 设置对话框 ====================
+@st.dialog("⚙️ 设置")
+def settings_dialog():
+    is_admin = st.session_state.user_role == "admin"
+
+    st.subheader("🤖 AI 接口配置")
+    if is_admin:
+        api_key = st.text_input(
+            "DeepSeek API Key",
+            type="password",
+            value=st.session_state.api_key,
+            placeholder="sk-...（在 platform.deepseek.com 获取）",
+            help="设置后全员共用，员工端无需填写"
+        )
+        if api_key and api_key != st.session_state.api_key:
+            _save_api_key(api_key)
+            st.session_state.api_key = api_key
+            st.success("API Key 已保存")
+    else:
+        if st.session_state.api_key:
+            st.success("✅ 已配置（由管理员设置）")
+        else:
+            st.warning("⚠️ 管理员尚未配置 API Key，AI 功能暂不可用")
+
+    if is_admin:
+        st.divider()
+        st.subheader("🔐 管理员密码")
+        adm_old = st.text_input("当前密码", type="password", key="sett_adm_old")
+        adm_new = st.text_input("新密码", type="password", key="sett_adm_new")
+        adm_new2 = st.text_input("确认新密码", type="password", key="sett_adm_new2")
+        if st.button("修改密码", key="sett_change_pwd", use_container_width=True):
+            if adm_old != _load_admin_password():
+                st.error("当前密码错误")
+            elif not adm_new:
+                st.error("新密码不能为空")
+            elif adm_new != adm_new2:
+                st.error("两次密码不一致")
+            else:
+                _save_admin_password(adm_new)
+                globals()["ADMIN_PASSWORD"] = adm_new
+                st.success("密码修改成功，立即生效")
+
+    st.divider()
+    st.caption("请假单智能处理助手 v1.0")
+
+
 # ==================== 已登录 → 顶部工具栏 ====================
 _col_title, _col_set = st.columns([15, 1])
 with _col_set:
@@ -1197,52 +1243,6 @@ def _render_admin_view():
                 )
         else:
             st.info("没有符合筛选条件的记录")
-
-
-# ==================== 设置对话框 ====================
-@st.dialog("⚙️ 设置")
-def settings_dialog():
-    is_admin = st.session_state.user_role == "admin"
-
-    st.subheader("🤖 AI 接口配置")
-    if is_admin:
-        api_key = st.text_input(
-            "DeepSeek API Key",
-            type="password",
-            value=st.session_state.api_key,
-            placeholder="sk-...（在 platform.deepseek.com 获取）",
-            help="设置后全员共用，员工端无需填写"
-        )
-        if api_key and api_key != st.session_state.api_key:
-            _save_api_key(api_key)
-            st.session_state.api_key = api_key
-            st.success("API Key 已保存")
-    else:
-        if st.session_state.api_key:
-            st.success("✅ 已配置（由管理员设置）")
-        else:
-            st.warning("⚠️ 管理员尚未配置 API Key，AI 功能暂不可用")
-
-    if is_admin:
-        st.divider()
-        st.subheader("🔐 管理员密码")
-        adm_old = st.text_input("当前密码", type="password", key="sett_adm_old")
-        adm_new = st.text_input("新密码", type="password", key="sett_adm_new")
-        adm_new2 = st.text_input("确认新密码", type="password", key="sett_adm_new2")
-        if st.button("修改密码", key="sett_change_pwd", use_container_width=True):
-            if adm_old != _load_admin_password():
-                st.error("当前密码错误")
-            elif not adm_new:
-                st.error("新密码不能为空")
-            elif adm_new != adm_new2:
-                st.error("两次密码不一致")
-            else:
-                _save_admin_password(adm_new)
-                globals()["ADMIN_PASSWORD"] = adm_new
-                st.success("密码修改成功，立即生效")
-
-    st.divider()
-    st.caption("请假单智能处理助手 v1.0")
 
 
 # ==================== 主入口 ====================
