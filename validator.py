@@ -45,7 +45,13 @@ def validate_leave_request(employee_id: str, leave_type: str,
 def _check_balance(employee: dict, leave_type: str, days: float) -> CheckResult:
     balance = employee["leave_balance"].get(leave_type)
     if balance is None:
-        return CheckResult(False, "fail", f"未知的请假类型：{leave_type}")
+        # 旧员工数据可能缺少新类型，自动补充默认额度
+        defaults = {"出差": 30.0, "市内公出": 10.0, "漏打卡补卡": 10.0}
+        if leave_type in defaults:
+            employee["leave_balance"][leave_type] = defaults[leave_type]
+            balance = defaults[leave_type]
+        else:
+            return CheckResult(False, "fail", f"未知的请假类型：{leave_type}")
 
     # 年假按日期折算可用额度
     check_balance = balance

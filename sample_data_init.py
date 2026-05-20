@@ -12,6 +12,7 @@ employees = [
         "id": "EMP001",
         "name": "张三",
         "department": "行政部",
+        "city": "上海",
         "leave_balance": {
             "年假": 5.0,
             "事假": 10.0,
@@ -28,6 +29,7 @@ employees = [
         "id": "EMP002",
         "name": "李四",
         "department": "行政部",
+        "city": "上海",
         "leave_balance": {
             "年假": 2.0,
             "事假": 10.0,
@@ -44,6 +46,7 @@ employees = [
         "id": "EMP003",
         "name": "王五",
         "department": "财务部",
+        "city": "上海",
         "leave_balance": {
             "年假": 10.0,
             "事假": 10.0,
@@ -60,6 +63,7 @@ employees = [
         "id": "EMP004",
         "name": "赵六",
         "department": "财务部",
+        "city": "上海",
         "leave_balance": {
             "年假": 8.0,
             "事假": 10.0,
@@ -76,6 +80,7 @@ employees = [
         "id": "EMP005",
         "name": "钱七",
         "department": "技术部",
+        "city": "上海",
         "leave_balance": {
             "年假": 7.0,
             "事假": 10.0,
@@ -92,6 +97,7 @@ employees = [
         "id": "EMP006",
         "name": "孙八",
         "department": "技术部",
+        "city": "上海",
         "leave_balance": {
             "年假": 3.5,
             "事假": 10.0,
@@ -108,6 +114,7 @@ employees = [
         "id": "EMP007",
         "name": "周九",
         "department": "市场部",
+        "city": "上海",
         "leave_balance": {
             "年假": 6.0,
             "事假": 10.0,
@@ -124,6 +131,7 @@ employees = [
         "id": "EMP008",
         "name": "吴十",
         "department": "市场部",
+        "city": "上海",
         "leave_balance": {
             "年假": 4.0,
             "事假": 10.0,

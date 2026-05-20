@@ -573,6 +573,9 @@ def _render_employee_view():
             if leave_type == "出差":
                 location = st.text_input("出差地点", value=info.get("location", ""),
                     placeholder="请输入出差目的地", key="loc_business")
+                emp_city = emp.get("city", "")
+                if location and emp_city and location.strip() == emp_city.strip():
+                    st.info(f"💡 出差地点「{location}」与你的办公城市「{emp_city}」相同，建议改为**市内公出**")
             elif leave_type == "市内公出":
                 location = st.text_input("公出地点", value=info.get("location", ""),
                     placeholder="请输入公出地点", key="loc_local")
@@ -968,6 +971,7 @@ def _render_admin_view():
         for e in emps:
             row = {"姓名": e["name"], "花名": e.get("nickname",""), "工号": e["id"],
                    "性别": e.get("gender",""), "部门": e["department"],
+                   "办公城市": e.get("city",""),
                    "毕业时间": e.get("graduation_date",""), "入职时间": e.get("hire_date",""),
                    "密码": e.get("password","123456")}
             row.update(e["leave_balance"])
@@ -994,6 +998,8 @@ def _render_admin_view():
             new_grad = col_ad1.text_input("毕业时间", value="2020-07-01", placeholder="YYYY-MM-DD", key="add_grad")
             new_hire = col_ad2.text_input("入职时间", value="2022-01-01", placeholder="YYYY-MM-DD", key="add_hire")
             new_dept = st.text_input("部门", key="add_dept")
+            new_city = st.text_input("办公城市", value="上海", key="add_city",
+                help="若出差地点与办公城市相同，自动转为市内公出")
             new_pwd = st.text_input("初始密码", value="123456", key="add_pwd")
 
             # 预览计算出的假期天数
@@ -1012,7 +1018,7 @@ def _render_admin_view():
                             "id": new_id, "name": new_name, "nickname": new_nickname,
                             "gender": new_gender, "graduation_date": new_grad,
                             "hire_date": new_hire, "department": new_dept,
-                            "password": new_pwd,
+                            "city": new_city, "password": new_pwd,
                             "leave_balance": preview_balance
                         })
                         from config import EMPLOYEES_FILE
@@ -1051,6 +1057,7 @@ def _render_admin_view():
             edit_hire = col_ed2.text_input("入职时间",
                 value=edit_target.get("hire_date",""), key="edit_hire")
             edit_dept = st.text_input("部门", value=edit_target.get("department",""), key="edit_dept")
+            edit_city = st.text_input("办公城市", value=edit_target.get("city","上海"), key="edit_city")
             edit_pwd = st.text_input("密码", value=edit_target.get("password","123456"), key="edit_pwd")
 
             col_save, col_recalc = st.columns(2)
@@ -1065,6 +1072,7 @@ def _render_admin_view():
                             e["graduation_date"] = edit_grad
                             e["hire_date"] = edit_hire
                             e["department"] = edit_dept
+                            e["city"] = edit_city
                             e["password"] = edit_pwd
                             break
                     from config import EMPLOYEES_FILE
