@@ -478,7 +478,7 @@ def _render_employee_view():
     emp = st.session_state.current_employee
     api_key = st.session_state.api_key
 
-    st.title(f"📝 请假申请 — {emp['name']}")
+    st.title(f"📝 考勤单据整理 — {emp['name']}")
     st.caption("描述需求 → AI 解析 → 上传材料 → 提交审批")
 
     # 提醒：缺材料
