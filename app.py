@@ -56,7 +56,7 @@ def _load_api_key() -> str:
     """加载 API Key（优先 Streamlit Secrets，其次本地文件）"""
     # 优先从 Streamlit Secrets 读取（云端部署）
     try:
-        secret_key = st.secrets.get("ANTHROPIC_API_KEY", "")
+        secret_key = st.secrets.get("DEEPSEEK_API_KEY", "")
         if secret_key:
             return secret_key
     except Exception:
@@ -360,10 +360,10 @@ with st.sidebar:
 
         # API Key 管理（仅管理员可见）
         api_key = st.text_input(
-            "Claude API Key", type="password",
+            "DeepSeek API Key", type="password",
             value=st.session_state.api_key,
-            placeholder="sk-ant-...（配置后全员共用）",
-            help="设置后自动保存，员工端无需填写"
+            placeholder="sk-...（配置后全员共用）",
+            help="设置后自动保存，员工端无需填写。在 platform.deepseek.com 获取"
         )
         if api_key and api_key != st.session_state.api_key:
             _save_api_key(api_key)
