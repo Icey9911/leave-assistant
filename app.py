@@ -1,4 +1,4 @@
-"""请假单智能处理助手 —— 账号登录 + 员工自助 + 管理员审批 + 文档审核"""
+"""考勤智能助手 —— 账号登录 + 员工自助 + 管理员审批 + 文档审核"""
 
 import streamlit as st
 import base64
@@ -273,7 +273,7 @@ def _decode_login_token(token: str) -> dict | None:
 
 
 # ==================== 页面配置 ====================
-st.set_page_config(page_title="请假单智能处理助手", page_icon="📋", layout="wide")
+st.set_page_config(page_title="考勤智能助手", page_icon="📋", layout="wide")
 
 # ==================== 会话状态 ====================
 for key, default in {
@@ -314,7 +314,7 @@ if not st.session_state.logged_in and not st.session_state.get("_auto_login_chec
 
 # ==================== 未登录 → 显示登录页 ====================
 if not st.session_state.logged_in:
-    st.title("📋 请假单智能处理助手")
+    st.title("📋 考勤智能助手")
     st.caption("请登录后使用")
 
     col_center = st.columns([1, 2, 1])[1]
@@ -461,7 +461,7 @@ def settings_dialog():
                 st.success("密码修改成功，立即生效")
 
     st.divider()
-    st.caption("请假单智能处理助手 v1.0")
+    st.caption("考勤智能助手 v1.0")
 
 
 # ==================== 已登录 → 顶部工具栏 ====================
@@ -539,7 +539,7 @@ def _render_employee_view():
         if st.session_state.extracted_info:
             info = st.session_state.extracted_info
             st.divider()
-            st.subheader("📌 请假信息确认")
+            st.subheader("📌 考勤信息确认")
 
             col_a, col_b = st.columns(2)
             lt_options = ["年假", "事假", "带薪病假", "调休", "婚假", "产假", "出差", "市内公出", "漏打卡补卡"]

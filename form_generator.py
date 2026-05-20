@@ -1,4 +1,4 @@
-"""审批单生成模块 —— 生成格式化请假审批单"""
+"""审批单生成模块 —— 生成格式化考勤审批单"""
 
 from datetime import date
 from data_store import get_employee_by_id
@@ -14,7 +14,7 @@ def generate_approval_form(employee_id: str, leave_info: dict, check_results: li
     results_md = _format_check_results(check_results)
 
     form_md = f"""---
-## 员工请假审批单
+## 员工考勤审批单
 
 | 项目 | 内容 |
 |------|------|
@@ -45,7 +45,7 @@ def generate_approval_form(employee_id: str, leave_info: dict, check_results: li
 
 ---
 
-*本单由 AI 请假助手自动生成*
+*本单由考勤智能助手自动生成*
 """
     return form_md
 

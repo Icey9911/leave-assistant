@@ -1,4 +1,4 @@
-"""AI 请假信息提取模块 —— 使用 DeepSeek API"""
+"""AI 考勤信息提取模块 —— 使用 DeepSeek API"""
 import json
 from datetime import date
 from openai import OpenAI
