@@ -188,6 +188,9 @@ def _calc_shanghai_leave(graduation_date: str, hire_date: str, gender: str) -> d
         "婚假": 10.0,
         "陪产假": 10.0 if gender == "男" else 0.0,
         "产假": 128.0 if gender == "女" else 0.0,
+        "出差": 30.0,
+        "市内公出": 10.0,
+        "漏打卡补卡": 3.0,
     }
 
 
@@ -539,7 +542,7 @@ def _render_employee_view():
             st.subheader("📌 请假信息确认")
 
             col_a, col_b = st.columns(2)
-            lt_options = ["年假", "事假", "带薪病假", "调休", "婚假", "产假"]
+            lt_options = ["年假", "事假", "带薪病假", "调休", "婚假", "产假", "出差", "市内公出", "漏打卡补卡"]
             lt_idx = lt_options.index(info.get("leave_type")) if info.get("leave_type") in lt_options else 0
 
             # 解析 AI 返回的时间
