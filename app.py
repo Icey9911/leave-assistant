@@ -190,7 +190,7 @@ def _calc_shanghai_leave(graduation_date: str, hire_date: str, gender: str) -> d
         "产假": 128.0 if gender == "女" else 0.0,
         "出差": 30.0,
         "市内公出": 10.0,
-        "漏打卡补卡": 3.0,
+        "漏打卡补卡": 10.0,
     }
 
 
