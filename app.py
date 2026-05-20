@@ -242,6 +242,20 @@ def _check_missing_approvals(emp_id: str) -> list[dict]:
     return reminders
 
 
+# ==================== 登录持久化（URL 参数） ====================
+def _encode_login_token(emp_id: str, role: str) -> str:
+    data = json.dumps({"id": emp_id, "role": role})
+    return base64.urlsafe_b64encode(data.encode()).decode()
+
+
+def _decode_login_token(token: str) -> dict | None:
+    try:
+        data = base64.urlsafe_b64decode(token.encode()).decode()
+        return json.loads(data)
+    except Exception:
+        return None
+
+
 # ==================== 页面配置 ====================
 st.set_page_config(page_title="请假单智能处理助手", page_icon="📋", layout="wide")
 
@@ -260,6 +274,26 @@ for key, default in {
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
+
+# 自动登录：刷新页面后通过 URL 参数恢复登录态
+if not st.session_state.logged_in and not st.session_state.get("_auto_login_checked"):
+    st.session_state["_auto_login_checked"] = True
+    token = st.query_params.get("user")
+    if token:
+        info = _decode_login_token(token)
+        if info:
+            role = info.get("role")
+            emp_id = info.get("id")
+            if role == "admin":
+                st.session_state.logged_in = True
+                st.session_state.user_role = "admin"
+                st.session_state.current_employee = None
+            elif role == "employee":
+                emp = get_employee_by_id(emp_id)
+                if emp:
+                    st.session_state.logged_in = True
+                    st.session_state.user_role = "employee"
+                    st.session_state.current_employee = emp
 
 
 # ==================== 未登录 → 显示登录页 ====================
@@ -284,6 +318,7 @@ if not st.session_state.logged_in:
                     st.session_state.logged_in = True
                     st.session_state.user_role = "employee"
                     st.session_state.current_employee = emp
+                    st.query_params["user"] = _encode_login_token(emp["id"], "employee")
                     st.rerun()
                 else:
                     st.error("密码错误，请重试")
@@ -297,6 +332,7 @@ if not st.session_state.logged_in:
                     st.session_state.logged_in = True
                     st.session_state.user_role = "admin"
                     st.session_state.current_employee = None
+                    st.query_params["user"] = _encode_login_token("admin", "admin")
                     st.rerun()
                 else:
                     st.error("密码错误")
@@ -351,6 +387,7 @@ with st.sidebar:
         if st.button("🚪 退出登录", use_container_width=True):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
+            st.query_params.clear()
             st.rerun()
 
     else:
@@ -361,6 +398,7 @@ with st.sidebar:
         if st.button("🚪 退出登录", use_container_width=True):
             for key in list(st.session_state.keys()):
                 del st.session_state[key]
+            st.query_params.clear()
             st.rerun()
 
 
