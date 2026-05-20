@@ -26,6 +26,7 @@ def generate_approval_form(employee_id: str, leave_info: dict, check_results: li
 | **结束时间** | {leave_info.get('end_date', '')} {leave_info.get('end_time', '')} |
 | **请假天数** | {leave_info.get('days', 0)} 天 |
 | **请假事由** | {leave_info.get('reason', '')} |
+| **出差/公出地点** | {leave_info.get('location', '—')} |
 | **申请日期** | {date.today().strftime('%Y-%m-%d')} |
 
 ---

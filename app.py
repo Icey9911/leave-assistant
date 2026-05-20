@@ -568,6 +568,15 @@ def _render_employee_view():
 
             reason = st.text_input("请假事由", value=info.get("reason", ""))
 
+            # 出差/市内公出：显示地点输入框
+            location = ""
+            if leave_type == "出差":
+                location = st.text_input("出差地点", value=info.get("location", ""),
+                    placeholder="请输入出差目的地", key="loc_business")
+            elif leave_type == "市内公出":
+                location = st.text_input("公出地点", value=info.get("location", ""),
+                    placeholder="请输入公出地点", key="loc_local")
+
             if st.button("✅ 校验信息", type="primary"):
                 results = validate_leave_request(emp["id"], leave_type,
                     start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d"), days)
@@ -576,7 +585,7 @@ def _render_employee_view():
                     updated_info = {
                         "leave_type": leave_type, "start_date": start_date.strftime("%Y-%m-%d"),
                         "start_time": start_time_str, "end_date": end_date.strftime("%Y-%m-%d"),
-                        "end_time": end_time_str, "days": days, "reason": reason
+                        "end_time": end_time_str, "days": days, "reason": reason, "location": location
                     }
                     st.session_state.form_md = generate_approval_form(emp["id"], updated_info, results)
 
@@ -637,6 +646,7 @@ def _render_employee_view():
                     "end_time": end_time_str,
                     "days": days,
                     "reason": reason,
+                    "location": location,
                     "application_image": st.session_state.app_image_path,
                     "approval_image": st.session_state.approval_image_path,
                     "sick_certificate_image": st.session_state.sick_cert_image_path if is_sick else None,
