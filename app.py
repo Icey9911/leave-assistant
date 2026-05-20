@@ -1202,20 +1202,28 @@ def _render_admin_view():
 # ==================== 设置对话框 ====================
 @st.dialog("⚙️ 设置")
 def settings_dialog():
-    st.subheader("🤖 AI 接口配置")
-    api_key = st.text_input(
-        "DeepSeek API Key",
-        type="password",
-        value=st.session_state.api_key,
-        placeholder="sk-...（在 platform.deepseek.com 获取）",
-        help="设置后全员共用，员工端无需填写"
-    )
-    if api_key and api_key != st.session_state.api_key:
-        _save_api_key(api_key)
-        st.session_state.api_key = api_key
-        st.success("API Key 已保存")
+    is_admin = st.session_state.user_role == "admin"
 
-    if st.session_state.user_role == "admin":
+    st.subheader("🤖 AI 接口配置")
+    if is_admin:
+        api_key = st.text_input(
+            "DeepSeek API Key",
+            type="password",
+            value=st.session_state.api_key,
+            placeholder="sk-...（在 platform.deepseek.com 获取）",
+            help="设置后全员共用，员工端无需填写"
+        )
+        if api_key and api_key != st.session_state.api_key:
+            _save_api_key(api_key)
+            st.session_state.api_key = api_key
+            st.success("API Key 已保存")
+    else:
+        if st.session_state.api_key:
+            st.success("✅ 已配置（由管理员设置）")
+        else:
+            st.warning("⚠️ 管理员尚未配置 API Key，AI 功能暂不可用")
+
+    if is_admin:
         st.divider()
         st.subheader("🔐 管理员密码")
         adm_old = st.text_input("当前密码", type="password", key="sett_adm_old")
@@ -1235,7 +1243,6 @@ def settings_dialog():
 
     st.divider()
     st.caption("请假单智能处理助手 v1.0")
-    st.caption("Powered by DeepSeek")
 
 
 # ==================== 主入口 ====================
