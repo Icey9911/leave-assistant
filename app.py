@@ -96,24 +96,37 @@ def _parse_time(time_str: str) -> tuple:
     except: return (9, 0)
 
 
-def _calc_days(start_date, start_time_str: str, end_date, end_time_str: str) -> float:
-    """按行政考勤规则计算天数：
-    上午 09:00-12:00 = 0.5天, 下午 13:00-18:00 = 0.5天
-    涵盖该时段超过2小时即计0.5天
+def _is_weekend(d: date) -> bool:
+    """判断是否为周末（周六/周日）"""
+    return d.weekday() >= 5
+
+
+def _calc_days(start_date, start_time_str: str, end_date, end_time_str: str) -> tuple[float, list[str]]:
+    """按行政考勤规则计算天数（自动排除周末）。
+    返回 (有效请假天数, 被排除的周末日期列表)
     """
     sh, sm = _parse_time(start_time_str)
     eh, em = _parse_time(end_time_str)
     start_mins = sh * 60 + sm
     end_mins = eh * 60 + em
 
-    if start_date == end_date:
-        return _partial_day(start_mins, end_mins)
+    total = 0.0
+    excluded_weekends = []
+    current = start_date
+    while current <= end_date:
+        if _is_weekend(current):
+            excluded_weekends.append(current.strftime("%m月%d日（周%s）" % ["一","二","三","四","五","六","日"][current.weekday()]))
+        elif current == start_date and current == end_date:
+            total += _partial_day(start_mins, end_mins)
+        elif current == start_date:
+            total += _partial_day(start_mins, 18 * 60)
+        elif current == end_date:
+            total += _partial_day(9 * 60, end_mins)
+        else:
+            total += 1.0
+        current += timedelta(days=1)
 
-    first = _partial_day(start_mins, 18 * 60)      # 第一天：从开始时间到18:00
-    last = _partial_day(9 * 60, end_mins)            # 最后一天：从09:00到结束时间
-    middle = max(0, (end_date - start_date).days - 1)  # 中间整天
-
-    return first + middle + last
+    return total, excluded_weekends
 
 
 def _partial_day(start_mins: int, end_mins: int) -> float:
@@ -545,8 +558,10 @@ def _render_employee_view():
                 # 自动计算天数
                 start_time_str = f"{start_hour:02d}:00"
                 end_time_str = f"{end_hour:02d}:00"
-                days = _calc_days(start_date, start_time_str, end_date, end_time_str)
+                days, weekends = _calc_days(start_date, start_time_str, end_date, end_time_str)
                 st.metric("自动计算天数", f"{days} 天")
+                if weekends:
+                    st.warning("⚠️ " + "、".join(weekends) + " 为周末，无需请假，已自动排除，不计入请假天数")
 
             reason = st.text_input("请假事由", value=info.get("reason", ""))
 

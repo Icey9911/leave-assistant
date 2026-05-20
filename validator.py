@@ -30,10 +30,13 @@ def validate_leave_request(employee_id: str, leave_type: str,
     # 2. 日期有效性校验
     results.append(_check_dates(start_date_str, end_date_str, days))
 
-    # 3. 部门冲突检测
+    # 3. 周末检测
+    results.append(_check_weekends(start_date_str, end_date_str))
+
+    # 4. 部门冲突检测
     results.append(_check_department_conflict(employee, start_date_str, end_date_str))
 
-    # 4. 规则校验
+    # 5. 规则校验
     results.extend(_check_rules(employee, leave_type, start_date_str, days))
 
     return results
@@ -82,7 +85,27 @@ def _check_dates(start_str: str, end_str: str, days: float) -> CheckResult:
     return CheckResult(True, "pass", "日期校验通过")
 
 
-def _check_department_conflict(employee: dict, start_str: str, end_str: str) -> CheckResult:
+def _check_weekends(start_str: str, end_str: str) -> CheckResult:
+    """检查请假区间是否包含周末"""
+    try:
+        start = datetime.strptime(start_str, "%Y-%m-%d").date()
+        end = datetime.strptime(end_str, "%Y-%m-%d").date()
+    except (ValueError, TypeError):
+        return CheckResult(True, "pass", "周末检测跳过（日期无效）")
+
+    weekend_dates = []
+    current = start
+    while current <= end:
+        if current.weekday() >= 5:  # 周六=5, 周日=6
+            weekday_name = ["一","二","三","四","五","六","日"][current.weekday()]
+            weekend_dates.append(f"{current.strftime('%m月%d日')}（周{weekday_name}）")
+        current += timedelta(days=1)
+
+    if weekend_dates:
+        return CheckResult(True, "warn",
+            f"包含 {len(weekend_dates)} 个周末日，无需请假，已自动排除",
+            "、".join(weekend_dates))
+    return CheckResult(True, "pass", "日期区间不包含周末")
     try:
         req_start = datetime.strptime(start_str, "%Y-%m-%d").date()
         req_end = datetime.strptime(end_str, "%Y-%m-%d").date()
