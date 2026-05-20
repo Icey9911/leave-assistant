@@ -106,6 +106,9 @@ def _check_weekends(start_str: str, end_str: str) -> CheckResult:
             f"包含 {len(weekend_dates)} 个周末日，无需请假，已自动排除",
             "、".join(weekend_dates))
     return CheckResult(True, "pass", "日期区间不包含周末")
+
+
+def _check_department_conflict(employee: dict, start_str: str, end_str: str) -> CheckResult:
     try:
         req_start = datetime.strptime(start_str, "%Y-%m-%d").date()
         req_end = datetime.strptime(end_str, "%Y-%m-%d").date()
