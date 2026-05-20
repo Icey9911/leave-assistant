@@ -151,6 +151,28 @@ def _check_rules(employee: dict, leave_type: str, start_str: str, days: float) -
     if leave_type == "带薪病假" and days > 3:
         results.append(CheckResult(True, "warn", "病假超过3天，需在销假时提供医院证明"))
 
+    # 漏打卡补卡：当月超过3次温馨提醒
+    if leave_type == "漏打卡补卡":
+        records = get_records_by_employee(employee["id"])
+        current_month = today.month
+        current_year = today.year
+        monthly_count = 0
+        for r in records:
+            if r.get("leave_type") != "漏打卡补卡":
+                continue
+            if r.get("status") not in ("已批准", "已复核"):
+                continue
+            try:
+                r_date = datetime.strptime(r.get("start_date", ""), "%Y-%m-%d").date()
+                if r_date.year == current_year and r_date.month == current_month:
+                    monthly_count += r.get("days", 0)
+            except (ValueError, TypeError):
+                pass
+        if monthly_count + days > 3:
+            results.append(CheckResult(True, "warn",
+                f"本月已使用漏打卡补卡 {monthly_count} 次，含本次将达 {monthly_count + days} 次",
+                "💡 温馨提示：记得上下班打卡哦～"))
+
     # 近期是否有同类请假（提示是否有异常频率）
     records = get_records_by_employee(employee["id"])
     recent_same_type = [
